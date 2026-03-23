@@ -184,7 +184,7 @@ class VenezuelaScraper:
                 race_class=config["class"],
                 purse=config["purse"],
                 race_time=now.replace(
-                    hour=12 + config["num"],
+                    hour=(12 + config["num"]) % 24,
                     minute=random.choice([0, 15, 30, 45]),
                     second=0,
                 ),

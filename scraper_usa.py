@@ -167,7 +167,7 @@ class USAScraper:
                     race_class=random.choice(classes),
                     purse=f"${random.choice([25, 50, 75, 100, 150, 200]) * 1000:,}",
                     race_time=now.replace(
-                        hour=12 + race_num,
+                        hour=(12 + race_num) % 24,
                         minute=random.choice([0, 15, 30, 45]),
                         second=0,
                     ),
