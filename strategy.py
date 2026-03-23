@@ -47,64 +47,43 @@ class Strategy:
         flag = "🇻🇪" if race.country == "VE" else "🇺🇸"
 
         # Build reasons string
-        reasons_text = "\n".join(f"   {r}" for r in prediction.reasons[:4])
+        reasons_text = "\n".join(f"• {r}" for r in prediction.reasons[:4])
 
         message = (
-            f"{flag} {prediction.tier} — SEÑAL DE VALOR\n"
-            f"━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
+            f"<b>{flag} {prediction.tier} | SEÑAL PRIVADA</b> 🎯\n"
+            f"━━━━━━━━━━━━━━━━━━\n"
+            f"🏇 <b>Caballo:</b> <code>{horse.name}</code> (#{horse.number})\n"
+            f"🎯 <b>Apuesta:</b> {prediction.suggested_bet}\n"
+            f"💎 <b>Cuota (Odds):</b> {horse.odds}\n"
+            f"📈 <b>Confianza:</b> {prediction.confidence}% {prediction.emoji_confidence}\n"
             f"\n"
-            f"🏟️ {race.track} | Carrera {race.race_number}\n"
-            f"📏 {race.distance} | {race.surface.upper()}\n"
+            f"📍 <b>Pista:</b> {race.track}\n"
+            f"🏁 <b>Carrera:</b> {race.race_number} ({race.distance} | {race.surface.upper()})\n"
         )
 
         if race.race_time:
-            message += f"🕐 Hora: {race.race_time.strftime('%I:%M %p')}\n"
+            message += f"⏱ <b>Hora:</b> {race.race_time.strftime('%I:%M %p')}\n"
 
-        if race.race_class:
-            message += f"🏷️ Clase: {race.race_class}\n"
-
-        message += (
-            f"\n"
-            f"🐴 <b>{horse.name}</b> #{horse.number}\n"
-            f"👤 Jockey: {horse.jockey}\n"
-            f"🎓 Entrenador: {horse.trainer}\n"
-        )
-
-        if horse.weight:
-            message += f"⚖️ Peso: {horse.weight}\n"
-
-        message += (
-            f"\n"
-            f"📊 <b>Confianza: {prediction.confidence}%</b> {prediction.emoji_confidence}\n"
-            f"💰 Odds: {horse.odds}\n"
-            f"🎯 Apuesta sugerida: {prediction.suggested_bet}\n"
-        )
-
-        if prediction.value_score > 0:
-            message += f"📈 Valor detectado: +{prediction.value_score}%\n"
-
+        message += f"\n<blockquote><b>📊 ESTADÍSTICAS DEL EJEMPLAR:</b>\n"
+        
         if horse.win_rate > 0:
             message += (
-                f"\n"
-                f"📋 Estadísticas:\n"
-                f"   • Victorias: {horse.wins}/{horse.total_races} ({horse.win_rate:.0f}%)\n"
-                f"   • Top 3: {horse.place_rate:.0f}%\n"
+                f"• Victorias: {horse.wins}/{horse.total_races} ({horse.win_rate:.0f}%)\n"
+                f"• Win/Place (Top 3): {horse.place_rate:.0f}%\n"
             )
-            if horse.recent_form:
-                message += f"   • Forma reciente: {horse.recent_form}\n"
+        message += (
+            f"• Jockey: {horse.jockey}\n"
+            f"• Preparador: {horse.trainer}\n"
+        )
+        if horse.weight:
+            message += f"• Peso: {horse.weight}\n"
 
         message += (
-            f"\n"
-            f"📌 Análisis:\n"
-            f"{reasons_text}\n"
-            f"\n"
-            f"━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
-            f"🎰 <a href='{AFFILIATE_LINK}'>¡Apuesta ahora!</a>\n"
-            f"⚠️ <i>Apuesta responsablemente. Esto es análisis, no garantía.</i>\n"
-            f"\n"
+            f"\n<b>🧠 ANÁLISIS DE LA IA:</b>\n"
+            f"{reasons_text}</blockquote>\n"
+            f"━━━━━━━━━━━━━━━━━━\n"
             f"🤖 @DerbySignals_bot"
         )
-
         return message
 
     def format_race_list(self, races: List[Race]) -> str:

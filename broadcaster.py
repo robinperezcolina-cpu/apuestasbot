@@ -4,16 +4,16 @@ Uses APScheduler for periodic scanning and broadcasting.
 """
 import logging
 from datetime import datetime
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Application
 from telegram.constants import ParseMode
 
 from scraper_venezuela import VenezuelaScraper
 from scraper_usa import USAScraper
 from strategy import Strategy
-from config import CHANNEL_ID, SCAN_INTERVAL
+from config import CHANNEL_ID, SCAN_INTERVAL, AFFILIATE_LINK
 
 logger = logging.getLogger(__name__)
-
 
 class Broadcaster:
     """
@@ -68,11 +68,15 @@ class Broadcaster:
                 try:
                     message = self.strategy.format_signal(pred)
                     bot = self.app.bot
+                    keyboard = [[InlineKeyboardButton("🎰 ¡Apuesta ahora!", url=AFFILIATE_LINK)]]
+                    reply_markup = InlineKeyboardMarkup(keyboard)
+
                     await bot.send_message(
                         chat_id=CHANNEL_ID,
                         text=message,
                         parse_mode=ParseMode.HTML,
                         disable_web_page_preview=True,
+                        reply_markup=reply_markup,
                     )
                     self.last_sent_ids.add(signal_id)
                     sent += 1
