@@ -236,7 +236,7 @@ class USAScraper:
             return races
 
         logger.info("📊 Usando datos simulados realistas para USA")
-        return self._generate_realistic_races()
+        return []
 
     def get_results(self) -> List[dict]:
         """Get recent US race results."""

@@ -263,7 +263,7 @@ class VenezuelaScraper:
 
         # Fall back to realistic simulation
         logger.info("📊 Usando datos simulados realistas para La Rinconada")
-        return self._generate_realistic_races()
+        return []
 
     def get_results(self) -> List[dict]:
         """Get recent race results."""
