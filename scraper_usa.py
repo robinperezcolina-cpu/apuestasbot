@@ -5,6 +5,7 @@ Scrapes from public racing data sources.
 import requests
 import logging
 import random
+import time
 from datetime import datetime
 from typing import List, Optional
 from bs4 import BeautifulSoup
@@ -56,6 +57,8 @@ class USAScraper:
     def __init__(self):
         self.session = requests.Session()
         self.session.headers.update(HEADERS)
+        self._cache_races = None
+        self._cache_time = 0
 
     def _try_scrape_racing_data(self) -> Optional[List[Race]]:
         """Attempt to scrape from public US racing sources."""
@@ -229,13 +232,20 @@ class USAScraper:
         Get upcoming races at US tracks.
         Attempts real scraping first, falls back to realistic simulation.
         """
+        if self._cache_races is not None and time.time() - self._cache_time < 300:
+            return self._cache_races
+            
         logger.info("🇺🇸 Buscando carreras en USA...")
 
         races = self._try_scrape_racing_data()
         if races:
+            self._cache_races = races
+            self._cache_time = time.time()
             return races
 
         logger.info("📊 Usando datos simulados realistas para USA")
+        self._cache_races = []
+        self._cache_time = time.time()
         return []
 
     def get_results(self) -> List[dict]:

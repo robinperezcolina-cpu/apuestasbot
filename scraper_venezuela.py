@@ -5,6 +5,7 @@ Scrapes from multiple public sources for race data.
 import requests
 import logging
 import random
+import time
 from datetime import datetime, timedelta
 from typing import List, Optional
 from bs4 import BeautifulSoup
@@ -54,6 +55,8 @@ class VenezuelaScraper:
     def __init__(self):
         self.session = requests.Session()
         self.session.headers.update(HEADERS)
+        self._cache_races = None
+        self._cache_time = 0
 
     def _try_scrape_thorodata(self) -> Optional[List[Race]]:
         """Attempt to scrape from Thorodata.net for real Venezuelan race data."""
@@ -248,21 +251,30 @@ class VenezuelaScraper:
         Get upcoming races at Venezuelan tracks.
         Attempts real scraping first, falls back to realistic simulation.
         """
+        if self._cache_races is not None and time.time() - self._cache_time < 300:
+            return self._cache_races
+            
         logger.info("🇻🇪 Buscando carreras en Venezuela...")
 
         # Try real sources first
         races = self._try_scrape_thorodata()
         if races:
             logger.info(f"✅ Obtenidas {len(races)} carreras de Thorodata")
+            self._cache_races = races
+            self._cache_time = time.time()
             return races
 
         races = self._try_scrape_lider()
         if races:
             logger.info(f"✅ Obtenidas {len(races)} carreras de LiderEnDeportes")
+            self._cache_races = races
+            self._cache_time = time.time()
             return races
 
         # Fall back to realistic simulation
         logger.info("📊 Usando datos simulados realistas para La Rinconada")
+        self._cache_races = []
+        self._cache_time = time.time()
         return []
 
     def get_results(self) -> List[dict]:
